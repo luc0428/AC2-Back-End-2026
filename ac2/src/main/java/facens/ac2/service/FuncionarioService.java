@@ -1,6 +1,5 @@
 package facens.ac2.service;
 
-import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
@@ -35,6 +34,7 @@ public class FuncionarioService {
     public FuncionarioModel Update(Long id, FuncionarioModel funcionarioAtualizado) {
         FuncionarioModel funcionarioExistente = ReadById(id);
         funcionarioExistente.setNome(funcionarioAtualizado.getNome());
+        funcionarioExistente.setSetor(funcionarioAtualizado.getSetor());
 
         return funcionarioRepository.save(funcionarioExistente);
     }
