@@ -21,4 +21,42 @@ import facens.ac2.service.ProjetoService;
 @RequestMapping("/Projeto")
 public class ProjetoController {
 
+    private ProjetoService projetoService;
+
+    public ProjetoController(ProjetoService ProjetoService){
+        this.projetoService = ProjetoService;
+    }
+
+    @GetMapping("/Read")
+    public List<ProjetoModel> listarProjetos(){
+        return projetoService.ReadAll();
+    }
+
+    @GetMapping("/Projeto/teste")
+    public String testeAPI(){
+        return " API funciona";
+    }
+
+    @GetMapping("/ReadId/{id}")
+    public ProjetoModel ReadById(@PathVariable Long id){
+        return projetoService.ReadById(id);
+    }
+
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    public ProjetoModel created(@RequestBody ProjetoModel projeto){
+        return projetoService.Create(projeto);
+    }
+
+    @PutMapping("/UpdateProject/{id}")
+    public ProjetoModel update (@PathVariable Long id, @RequestBody ProjetoModel projetoAtualizado){
+        return projetoService.Update(id, projetoAtualizado);
+    }
+
+    @DeleteMapping("/DeleteProjeto/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void removerProjeto(@PathVariable Long id){
+         projetoService.Delete(id);
+    }
+
 }
