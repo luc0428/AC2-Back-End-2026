@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VetManage - Gestão de Clínica</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 10px;
+        }
+
+        .modal {
+            transition: opacity 0.25s ease;
+        }
+    </style>
+</head>
+<body class="text-slate-800">
+
+    <!-- Layout Principal -->
+    <div class="flex flex-col md:flex-row min-h-screen">
+        
+        <!-- Sidebar -->
+        <aside class="w-full md:w-64 bg-emerald-700 text-white p-6 shadow-xl flex-shrink-0">
+            <div class="flex items-center gap-3 mb-10">
+                <div class="bg-white p-2 rounded-lg">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-emerald-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                    </svg>
+                </div>
+                <h1 class="text-xl font-bold tracking-tight">VetManage</h1>
+            </div>
+
+            <nav class="space-y-2">
+                <button onclick="switchTab('atividades')" class="nav-link w-full flex items-center gap-3 p-3 rounded-lg hover:bg-emerald-600 transition active bg-emerald-800" data-tab="atividades">
+                    <span>Atividades</span>
+                </button>
+                <button onclick="switchTab('funcionarios')" class="nav-link w-full flex items-center gap-3 p-3 rounded-lg hover:bg-emerald-600 transition" data-tab="funcionarios">
+                    <span>Funcionários</span>
+                </button>
+                <button onclick="switchTab('setores')" class="nav-link w-full flex items-center gap-3 p-3 rounded-lg hover:bg-emerald-600 transition" data-tab="setores">
+                    <span>Setores</span>
+                </button>
+            </nav>
+        </aside>
+
+        <!-- Conteúdo Principal -->
+        <main class="flex-1 overflow-y-auto">
+            <div class="max-w-6xl mx-auto p-4 md:p-10 w-full">
+                
+                <!-- Notificação Customizada -->
+                <div id="notification" class="fixed top-5 right-5 hidden transform transition-all duration-300 translate-y-[-20px] opacity-0 z-50">
+                    <div class="bg-slate-800 text-white px-6 py-3 rounded-lg shadow-2xl flex items-center gap-3">
+                        <span id="notification-msg">Ação realizada com sucesso!</span>
+                    </div>
+                </div>
+
+                <!-- Seção Atividades -->
+                <section id="atividades" class="tab-content active">
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+                        <h2 class="text-2xl font-bold">Gestão de Atividades</h2>
+                        <button onclick="openModal('atividade')" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg font-medium transition shadow-md">
+                            + Nova Atividade
+                        </button>
+                    </div>
+                    <div class="bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden">
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left">
+                                <thead class="bg-slate-50 border-b">
+                                    <tr>
+                                        <th class="p-4 font-semibold text-slate-600">Descrição</th>
+                                        <th class="p-4 font-semibold text-slate-600">Funcionário</th>
+                                        <th class="p-4 font-semibold text-slate-600">Setor</th>
+                                        <th class="p-4 font-semibold text-slate-600">Período</th>
+                                        <th class="p-4 font-semibold text-slate-600 text-right">Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="list-atividades" class="divide-y divide-slate-100"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Seção Funcionários -->
+                <section id="funcionarios" class="tab-content">
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+                        <h2 class="text-2xl font-bold">Gestão de Funcionários</h2>
+                        <button onclick="openModal('funcionario')" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg font-medium transition shadow-md">
+                            + Novo Funcionário
+                        </button>
+                    </div>
+                    <div class="bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden">
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left">
+                                <thead class="bg-slate-50 border-b">
+                                    <tr>
+                                        <th class="p-4 font-semibold text-slate-600">Nome</th>
+                                        <th class="p-4 font-semibold text-slate-600 text-right">Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="list-funcionarios" class="divide-y divide-slate-100"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Seção Setores -->
+                <section id="setores" class="tab-content">
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+                        <h2 class="text-2xl font-bold">Gestão de Setores</h2>
+                        <button onclick="openModal('setor')" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg font-medium transition shadow-md">
+                            + Novo Setor
+                        </button>
+                    </div>
+                    <div class="bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden">
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left">
+                                <thead class="bg-slate-50 border-b">
+                                    <tr>
+                                        <th class="p-4 font-semibold text-slate-600">Nome do Setor</th>
+                                        <th class="p-4 font-semibold text-slate-600 text-right">Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="list-setores" class="divide-y divide-slate-100"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modais -->
+    <div id="modal-container" class="fixed inset-0 bg-black/50 hidden flex items-center justify-center p-4 z-50 backdrop-blur-sm">
+        
+        <!-- Modal Funcionário -->
+        <div id="modal-funcionario" class="modal-content hidden bg-white rounded-2xl shadow-2xl w-full max-w-md p-8">
+            <h3 class="text-xl font-bold mb-6" id="modal-title-func">Cadastrar Funcionário</h3>
+            <form id="form-funcionario" class="space-y-4">
+                <input type="hidden" id="func-id">
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">Nome Completo</label>
+                    <input type="text" id="func-nome" required class="w-full border p-2.5 rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none">
+                </div>
+                <div class="flex gap-3 pt-4">
+                    <button type="button" onclick="closeModal()" class="flex-1 px-4 py-2 bg-slate-100 rounded-lg font-medium hover:bg-slate-200 transition">Cancelar</button>
+                    <button type="submit" class="flex-1 px-4 py-2 bg-emerald-600 text-white rounded-lg font-medium hover:bg-emerald-700 transition">Salvar</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Modal Setor -->
+        <div id="modal-setor" class="modal-content hidden bg-white rounded-2xl shadow-2xl w-full max-w-md p-8">
+            <h3 class="text-xl font-bold mb-6" id="modal-title-setor">Cadastrar Setor</h3>
+            <form id="form-setor" class="space-y-4">
+                <input type="hidden" id="setor-id">
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">Nome do Setor</label>
+                    <input type="text" id="setor-nome" required class="w-full border p-2.5 rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none">
+                </div>
+                <div class="flex gap-3 pt-4">
+                    <button type="button" onclick="closeModal()" class="flex-1 px-4 py-2 bg-slate-100 rounded-lg font-medium hover:bg-slate-200 transition">Cancelar</button>
+                    <button type="submit" class="flex-1 px-4 py-2 bg-emerald-600 text-white rounded-lg font-medium hover:bg-emerald-700 transition">Salvar</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Modal Atividade -->
+        <div id="modal-atividade" class="modal-content hidden bg-white rounded-2xl shadow-2xl w-full max-w-lg p-8">
+            <h3 class="text-xl font-bold mb-6" id="modal-title-atv">Cadastrar Atividade</h3>
+            <form id="form-atividade" class="space-y-4">
+                <input type="hidden" id="atv-id">
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">Descrição</label>
+                    <textarea id="atv-descricao" required class="w-full border p-2.5 rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none" rows="2"></textarea>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-1">Responsável</label>
+                        <select id="atv-funcionario" required class="w-full border p-2.5 rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none bg-white"></select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-1">Setor</label>
+                        <select id="atv-setor" required class="w-full border p-2.5 rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none bg-white"></select>
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-1">Data Início</label>
+                        <input type="date" id="atv-inicio" required class="w-full border p-2.5 rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-1">Data Fim</label>
+                        <input type="date" id="atv-fim" required class="w-full border p-2.5 rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none">
+                    </div>
+                </div>
+                <div class="flex gap-3 pt-4">
+                    <button type="button" onclick="closeModal()" class="flex-1 px-4 py-2 bg-slate-100 rounded-lg font-medium hover:bg-slate-200 transition">Cancelar</button>
+                    <button type="submit" class="flex-1 px-4 py-2 bg-emerald-600 text-white rounded-lg font-medium hover:bg-emerald-700 transition">Salvar Atividade</button>
+                </div>
+            </form>
+        </div>
+
+    </div>
+
+    <script>
+        // --- ESTADO DA APLICAÇÃO ---
+        let state = {
+            funcionarios: [
+                { id: 1, nome: "Dra. Ana Silva" },
+                { id: 2, nome: "Dr. Roberto Santos" }
+            ],
+            setores: [
+                { id: 1, nome: "Cirurgia" },
+                { id: 2, nome: "Internação" },
+                { id: 3, nome: "Vacinação" }
+            ],
+            atividades: [
+                { 
+                    id: 1, 
+                    descricao: "Cirurgia de Castração", 
+                    funcionarioId: 1, 
+                    setorId: 1, 
+                    inicio: "2024-05-10", 
+                    fim: "2024-05-10" 
+                }
+            ]
+        };
+
+        // --- NAVEGAÇÃO ---
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.nav-link').forEach(link => link.classList.remove('bg-emerald-800'));
+            
+            const selectedTab = document.getElementById(tabId);
+            if (selectedTab) selectedTab.classList.add('active');
+            
+            const selectedLink = document.querySelector(`[data-tab="${tabId}"]`);
+            if (selectedLink) selectedLink.classList.add('bg-emerald-800');
+        }
+
+        // --- UTILITÁRIOS ---
+        function showNotification(msg) {
+            const notif = document.getElementById('notification');
+            document.getElementById('notification-msg').innerText = msg;
+            notif.classList.remove('hidden');
+            setTimeout(() => {
+                notif.classList.add('translate-y-0', 'opacity-100');
+            }, 10);
+            
+            setTimeout(() => {
+                notif.classList.remove('translate-y-0', 'opacity-100');
+                setTimeout(() => notif.classList.add('hidden'), 300);
+            }, 3000);
+        }
+
+        function openModal(type, editId = null) {
+            document.getElementById('modal-container').classList.remove('hidden');
+            document.querySelectorAll('.modal-content').forEach(c => c.classList.add('hidden'));
+            
+            if (type === 'funcionario') {
+                const modal = document.getElementById('modal-funcionario');
+                modal.classList.remove('hidden');
+                const form = document.getElementById('form-funcionario');
+                form.reset();
+                document.getElementById('func-id').value = "";
+                document.getElementById('modal-title-func').innerText = "Cadastrar Funcionário";
+                
+                if (editId) {
+                    const item = state.funcionarios.find(f => f.id == editId);
+                    document.getElementById('func-id').value = item.id;
+                    document.getElementById('func-nome').value = item.nome;
+                    document.getElementById('modal-title-func').innerText = "Editar Funcionário";
+                }
+            } else if (type === 'setor') {
+                const modal = document.getElementById('modal-setor');
+                modal.classList.remove('hidden');
+                const form = document.getElementById('form-setor');
+                form.reset();
+                document.getElementById('setor-id').value = "";
+                document.getElementById('modal-title-setor').innerText = "Cadastrar Setor";
+
+                if (editId) {
+                    const item = state.setores.find(s => s.id == editId);
+                    document.getElementById('setor-id').value = item.id;
+                    document.getElementById('setor-nome').value = item.nome;
+                    document.getElementById('modal-title-setor').innerText = "Editar Setor";
+                }
+            } else if (type === 'atividade') {
+                const modal = document.getElementById('modal-atividade');
+                modal.classList.remove('hidden');
+                populateSelects();
+                const form = document.getElementById('form-atividade');
+                form.reset();
+                document.getElementById('atv-id').value = "";
+                document.getElementById('modal-title-atv').innerText = "Cadastrar Atividade";
+
+                if (editId) {
+                    const item = state.atividades.find(a => a.id == editId);
+                    document.getElementById('atv-id').value = item.id;
+                    document.getElementById('atv-descricao').value = item.descricao;
+                    document.getElementById('atv-funcionario').value = item.funcionarioId;
+                    document.getElementById('atv-setor').value = item.setorId;
+                    document.getElementById('atv-inicio').value = item.inicio;
+                    document.getElementById('atv-fim').value = item.fim;
+                    document.getElementById('modal-title-atv').innerText = "Editar Atividade";
+                }
+            }
+        }
+
+        function closeModal() {
+            document.getElementById('modal-container').classList.add('hidden');
+        }
+
+        function populateSelects() {
+            const fSelect = document.getElementById('atv-funcionario');
+            const sSelect = document.getElementById('atv-setor');
+            
+            fSelect.innerHTML = '<option value="">Selecione...</option>' + 
+                state.funcionarios.map(f => `<option value="${f.id}">${f.nome}</option>`).join('');
+            
+            sSelect.innerHTML = '<option value="">Selecione...</option>' + 
+                state.setores.map(s => `<option value="${s.id}">${s.nome}</option>`).join('');
+        }
+
+        // --- RENDERIZAÇÃO ---
+        function render() {
+            // Renderiza Funcionários
+            const listFunc = document.getElementById('list-funcionarios');
+            listFunc.innerHTML = state.funcionarios.map(f => `
+                <tr class="hover:bg-slate-50 transition">
+                    <td class="p-4 font-medium">${f.nome}</td>
+                    <td class="p-4 text-right whitespace-nowrap">
+                        <button onclick="openModal('funcionario', ${f.id})" class="text-blue-600 hover:text-blue-800 font-medium mr-4">Editar</button>
+                        <button onclick="deleteItem('funcionarios', ${f.id})" class="text-red-600 hover:text-red-800 font-medium">Excluir</button>
+                    </td>
+                </tr>
+            `).join('');
+
+            // Renderiza Setores
+            const listSetor = document.getElementById('list-setores');
+            listSetor.innerHTML = state.setores.map(s => `
+                <tr class="hover:bg-slate-50 transition">
+                    <td class="p-4 font-medium">${s.nome}</td>
+                    <td class="p-4 text-right whitespace-nowrap">
+                        <button onclick="openModal('setor', ${s.id})" class="text-blue-600 hover:text-blue-800 font-medium mr-4">Editar</button>
+                        <button onclick="deleteItem('setores', ${s.id})" class="text-red-600 hover:text-red-800 font-medium">Excluir</button>
+                    </td>
+                </tr>
+            `).join('');
+
+            // Renderiza Atividades
+            const listAtv = document.getElementById('list-atividades');
+            listAtv.innerHTML = state.atividades.map(a => {
+                const func = state.funcionarios.find(f => f.id == a.funcionarioId)?.nome || 'Não definido';
+                const setor = state.setores.find(s => s.id == a.setorId)?.nome || 'Não definido';
+                const formatData = (d) => d.split('-').reverse().join('/');
+
+                return `
+                    <tr class="hover:bg-slate-50 transition">
+                        <td class="p-4">
+                            <div class="font-medium text-slate-900">${a.descricao}</div>
+                        </td>
+                        <td class="p-4 text-slate-600">${func}</td>
+                        <td class="p-4 text-slate-600">
+                             <span class="px-2 py-1 bg-slate-100 rounded text-xs font-semibold uppercase tracking-wider">${setor}</span>
+                        </td>
+                        <td class="p-4 text-sm text-slate-500 whitespace-nowrap">
+                            ${formatData(a.inicio)} até ${formatData(a.fim)}
+                        </td>
+                        <td class="p-4 text-right whitespace-nowrap">
+                            <button onclick="openModal('atividade', ${a.id})" class="text-blue-600 hover:text-blue-800 font-medium mr-4">Editar</button>
+                            <button onclick="deleteItem('atividades', ${a.id})" class="text-red-600 hover:text-red-800 font-medium">Excluir</button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // --- CRUD ---
+        function deleteItem(collection, id) {
+            if (collection === 'funcionarios') {
+                const vinculada = state.atividades.some(a => a.funcionarioId == id);
+                if (vinculada) {
+                    showNotification("Aviso: Funcionário vinculado a atividades.");
+                    return;
+                }
+            }
+            if (collection === 'setores') {
+                const vinculada = state.atividades.some(a => a.setorId == id);
+                if (vinculada) {
+                    showNotification("Aviso: Setor vinculado a atividades.");
+                    return;
+                }
+            }
+
+            state[collection] = state[collection].filter(item => item.id != id);
+            showNotification("Removido com sucesso!");
+            render();
+        }
+
+        document.getElementById('form-funcionario').onsubmit = (e) => {
+            e.preventDefault();
+            const id = document.getElementById('func-id').value;
+            const nome = document.getElementById('func-nome').value;
+            if (id) {
+                const index = state.funcionarios.findIndex(f => f.id == id);
+                state.funcionarios[index].nome = nome;
+            } else {
+                state.funcionarios.push({ id: Date.now(), nome });
+            }
+            closeModal(); render(); showNotification("Operação realizada!");
+        };
+
+        document.getElementById('form-setor').onsubmit = (e) => {
+            e.preventDefault();
+            const id = document.getElementById('setor-id').value;
+            const nome = document.getElementById('setor-nome').value;
+            if (id) {
+                const index = state.setores.findIndex(s => s.id == id);
+                state.setores[index].nome = nome;
+            } else {
+                state.setores.push({ id: Date.now(), nome });
+            }
+            closeModal(); render(); showNotification("Operação realizada!");
+        };
+
+        document.getElementById('form-atividade').onsubmit = (e) => {
+            e.preventDefault();
+            const id = document.getElementById('atv-id').value;
+            const atividade = {
+                id: id ? parseInt(id) : Date.now(),
+                descricao: document.getElementById('atv-descricao').value,
+                funcionarioId: parseInt(document.getElementById('atv-funcionario').value),
+                setorId: parseInt(document.getElementById('atv-setor').value),
+                inicio: document.getElementById('atv-inicio').value,
+                fim: document.getElementById('atv-fim').value
+            };
+            if (id) {
+                const index = state.atividades.findIndex(a => a.id == id);
+                state.atividades[index] = atividade;
+            } else {
+                state.atividades.push(atividade);
+            }
+            closeModal(); render(); showNotification("Operação realizada!");
+        };
+
+        window.onload = render;
+    </script>
+</body>
+</html>
