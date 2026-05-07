@@ -19,11 +19,48 @@ import facens.ac2.model.FuncionarioModel;
 import facens.ac2.service.FuncionarioService;
 
 
+
 @RestController
 @RequestMapping("/Funcionario")
 public class FuncionarioController {
 
 
-    
+    private FuncionarioService funcionarioService;
+
+    public FuncionarioController(FuncionarioService FuncionarioService){
+        this.funcionarioService = FuncionarioService;
+    }
+
+    //busca 
+ @GetMapping("/Read")
+    public List<FuncionarioModel> listarFuncionarios(){
+        return funcionarioService.ReadAll();
+    }
+
+    //busca por id
+ @GetMapping("/ReadId/{id}")
+    public FuncionarioModel ReadById(@PathVariable Long id){
+        return funcionarioService.ReadById(id);
+    }
+
+    //cadastro
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    public FuncionarioModel created(@RequestBody FuncionarioModel funcionario){
+        return funcionarioService.Create(funcionario);
+    }
+
+    //atualizar
+    @PutMapping("/UpdateFuncionario/{id}")
+    public FuncionarioModel update (@PathVariable Long id, @RequestBody FuncionarioModel funcionarioAtualizado){
+        return funcionarioService.Update(id, funcionarioAtualizado);
+    }
+
+    //deletar
+    @DeleteMapping("/DeleteFuncionario/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void removerFuncionario(@PathVariable Long id){
+         funcionarioService.Delete(id);
+    }
 
 }
