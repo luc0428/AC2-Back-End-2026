@@ -34,7 +34,7 @@ public class ProjetoService {
 
     public ProjetoModel Update(Long id, ProjetoModel projetoAtualizado) {
      
-        ProjetoModel projetoExistente = findById(id);
+        ProjetoModel projetoExistente = ReadById(id);
         projetoExistente.setDescricao(projetoAtualizado.getDescricao());
         projetoExistente.setDataInicio(projetoAtualizado.getDataInicio());
         projetoExistente.setDataFim(projetoAtualizado.getDataFim());
@@ -43,7 +43,7 @@ public class ProjetoService {
     }
 
     public void Delete(Long id) {
-        ProjetoModel projetoExistente = findById(id);
+        ProjetoModel projetoExistente = ReadById(id);
         projetoRepository.delete(projetoExistente);
     }
 }

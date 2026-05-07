@@ -28,7 +28,7 @@ public class FuncionarioService {
     }
 
     public FuncionarioModel Create( FuncionarioModel funcionario){
-        funcionario.setid(null);
+        funcionario.setId(null);
         return funcionarioRepository.save(funcionario);
     }
 
