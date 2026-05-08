@@ -14,11 +14,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import facens.ac2.model.FuncionarioModel;
-import facens.ac2.model.ProjetoModel;
+
 import facens.ac2.model.SetorModel;
-import facens.ac2.service.ProjetoService;
 import facens.ac2.service.SetorService;
+
 
 @RestController
 @CrossOrigin(origins = "*")
@@ -31,31 +30,39 @@ public class SetorController {
         this.setorService = SetorService;
     }
 
+    //busca 
  @GetMapping("/Read")
     public List<SetorModel> listarSetores(){
         return setorService.ReadAll();
     }
 
+    //busca por id
  @GetMapping("/ReadId/{id}")
     public SetorModel ReadById(@PathVariable Long id){
         return setorService.ReadById(id);
     }
 
+    //cadastro
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public SetorModel created(@RequestBody SetorModel setor){
         return setorService.Create(setor);
     }
 
+    //atualizar
     @PutMapping("/UpdateProject/{id}")
     public SetorModel update (@PathVariable Long id, @RequestBody SetorModel setorAtualizado){
         return setorService.Update(id, setorAtualizado);
     }
 
+    //deletar
     @DeleteMapping("/DeleteSetor/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void removerSetor(@PathVariable Long id){
          setorService.Delete(id);
     }
+
+   //buscar setor com funcionario
+   
 
 }
