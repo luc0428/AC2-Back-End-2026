@@ -1,5 +1,5 @@
 package facens.ac2.service;
-import java.time.LocalDate;
+
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
@@ -38,6 +38,7 @@ public class ProjetoService {
         projetoExistente.setDescricao(projetoAtualizado.getDescricao());
         projetoExistente.setDataInicio(projetoAtualizado.getDataInicio());
         projetoExistente.setDataFim(projetoAtualizado.getDataFim());
+        projetoExistente.setFuncionario(projetoAtualizado.getFuncionario());
 
         return projetoRepository.save(projetoExistente);
     }
