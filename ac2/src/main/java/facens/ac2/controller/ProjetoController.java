@@ -4,6 +4,7 @@ package facens.ac2.controller;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,6 +19,7 @@ import facens.ac2.model.ProjetoModel;
 import facens.ac2.service.ProjetoService;
 
 @RestController
+@CrossOrigin(origins = "*")
 @RequestMapping("/Projeto")
 public class ProjetoController {
 
