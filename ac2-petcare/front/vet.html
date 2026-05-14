@@ -333,7 +333,7 @@
     </div>
 
     <script>
-        const API_BASE = 'http://localhost:8080';
+        const API_BASE = 'http://localhost:8081';
 
         let state = {
             tutors: [],
@@ -510,6 +510,7 @@
         // Vets
         document.getElementById('vet-form').onsubmit = async (e) => {
             e.preventDefault();
+            const id = document.getElementById('vet-id').value;
             const vetData = {
                 nome: document.getElementById('vet-name').value,
                 especialidade: document.getElementById('vet-specialty').value,
@@ -517,10 +518,17 @@
             };
 
             try {
-                await apiRequest('/Veterinario', {
-                    method: 'POST',
-                    body: JSON.stringify(vetData)
-                });
+                if (id) {
+                    await apiRequest(`/Veterinario/UpdateVeterinario/${id}`, {
+                        method: 'PUT',
+                        body: JSON.stringify({ id: Number(id), ...vetData })
+                    });
+                } else {
+                    await apiRequest('/Veterinario', {
+                        method: 'POST',
+                        body: JSON.stringify(vetData)
+                    });
+                }
                 await loadAllData();
                 closeModal('vet-modal');
                 notify('Veterinário cadastrado!');
@@ -528,6 +536,15 @@
                 notify(error.message || 'Erro ao cadastrar veterinário');
             }
         };
+
+        function editVet(id) {
+            const vet = state.vets.find(v => v.id === Number(id));
+            document.getElementById('vet-id').value = vet.id;
+            document.getElementById('vet-name').value = vet.nome;
+            document.getElementById('vet-specialty').value = vet.especialidade;
+            document.getElementById('vet-modal-title').textContent = 'Editar Veterinário';
+            openModal('vet-modal');
+        }
 
         async function deleteVet(id) {
             try {
@@ -541,6 +558,7 @@
         // Pets
         document.getElementById('pet-form').onsubmit = async (e) => {
             e.preventDefault();
+            const id = document.getElementById('pet-id').value;
             const petData = {
                 nome: document.getElementById('pet-name').value,
                 especie: document.getElementById('pet-species').value,
@@ -550,10 +568,17 @@
             };
 
             try {
-                await apiRequest('/Animal', {
-                    method: 'POST',
-                    body: JSON.stringify(petData)
-                });
+                if (id) {
+                    await apiRequest(`/Animal/UpdateAnimal/${id}`, {
+                        method: 'PUT',
+                        body: JSON.stringify({ id: Number(id), ...petData })
+                    });
+                } else {
+                    await apiRequest('/Animal', {
+                        method: 'POST',
+                        body: JSON.stringify(petData)
+                    });
+                }
                 await loadAllData();
                 closeModal('pet-modal');
                 notify('Pet salvo!');
@@ -561,6 +586,17 @@
                 notify(error.message || 'Erro ao salvar pet');
             }
         };
+
+        function editPet(id) {
+            const pet = state.pets.find(p => p.id === Number(id));
+            document.getElementById('pet-id').value = pet.id;
+            document.getElementById('pet-name').value = pet.nome;
+            document.getElementById('pet-species').value = pet.especie;
+            document.getElementById('pet-breed').value = pet.raca;
+            document.getElementById('pet-tutor-id').value = pet.tutor ? pet.tutor.id : '';
+            document.getElementById('pet-modal-title').textContent = 'Editar Pet';
+            openModal('pet-modal');
+        }
 
         async function deletePet(id) {
             try {
@@ -668,6 +704,7 @@
                     <td class="px-6 py-4 text-gray-500">${p.especie} / ${p.raca}</td>
                     <td class="px-6 py-4 text-gray-500">${tutor ? tutor.nome : 'N/A'}</td>
                     <td class="px-6 py-4 text-right">
+                        <button onclick="editPet('${p.id}')" class="text-teal-600 hover:underline mr-4">Editar</button>
                         <button onclick="deletePet('${p.id}')" class="text-red-500 hover:underline">Excluir</button>
                     </td>
                 </tr>`;
@@ -688,6 +725,7 @@
                 <td class="px-6 py-4 font-medium">${v.nome}</td>
                 <td class="px-6 py-4 text-gray-500">${v.especialidade}</td>
                 <td class="px-6 py-4 text-right">
+                    <button onclick="editVet('${v.id}')" class="text-teal-600 hover:underline mr-4">Editar</button>
                     <button onclick="deleteVet('${v.id}')" class="text-red-500 hover:underline">Excluir</button>
                 </td>
             </tr>`).join('') || '<tr><td colspan="3" class="px-6 py-4 text-center text-gray-400">Nenhum veterinário.</td></tr>';
