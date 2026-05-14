@@ -3,14 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VetManage - Gestao de Clinica</title>
+    <title>ProjtManage - Gestao de Projetos</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #f8fafc;
+            background:
+                radial-gradient(circle at top left, rgba(99, 102, 241, 0.14), transparent 32%),
+                radial-gradient(circle at top right, rgba(14, 165, 233, 0.12), transparent 28%),
+                linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
         }
 
         .tab-content {
@@ -29,53 +32,83 @@
 <body class="text-slate-800">
 
     <div class="flex flex-col md:flex-row min-h-screen">
-        <aside class="w-full md:w-64 bg-emerald-700 text-white p-6 shadow-xl flex-shrink-0">
+        <aside class="w-full md:w-72 bg-slate-950 text-white p-6 shadow-2xl flex-shrink-0 border-r border-white/10">
             <div class="flex items-center gap-3 mb-10">
-                <div class="bg-white p-2 rounded-lg">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-emerald-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                <div class="bg-indigo-500/15 p-2 rounded-xl border border-indigo-400/20">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-indigo-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7h16M4 12h10M4 17h16" />
                     </svg>
                 </div>
-                <h1 class="text-xl font-bold tracking-tight">VetManage</h1>
+                <div>
+                    <h1 class="text-xl font-bold tracking-tight">ProjtManage</h1>
+                    <p class="text-xs text-slate-400">Gerenciador de projetos</p>
+                </div>
             </div>
 
             <nav class="space-y-2">
-                <button onclick="switchTab('atividades')" class="nav-link w-full flex items-center gap-3 p-3 rounded-lg hover:bg-emerald-600 transition active bg-emerald-800" data-tab="atividades">
-                    <span>Atividades</span>
+                <button onclick="switchTab('atividades')" class="nav-link w-full flex items-center gap-3 p-3 rounded-xl hover:bg-white/10 transition active bg-indigo-600/30 border border-indigo-400/20" data-tab="atividades">
+                    <span>Projetos</span>
                 </button>
-                <button onclick="switchTab('funcionarios')" class="nav-link w-full flex items-center gap-3 p-3 rounded-lg hover:bg-emerald-600 transition" data-tab="funcionarios">
-                    <span>Funcionarios</span>
+                <button onclick="switchTab('funcionarios')" class="nav-link w-full flex items-center gap-3 p-3 rounded-xl hover:bg-white/10 transition" data-tab="funcionarios">
+                    <span>Equipe</span>
                 </button>
-                <button onclick="switchTab('setores')" class="nav-link w-full flex items-center gap-3 p-3 rounded-lg hover:bg-emerald-600 transition" data-tab="setores">
-                    <span>Setores</span>
+                <button onclick="switchTab('setores')" class="nav-link w-full flex items-center gap-3 p-3 rounded-xl hover:bg-white/10 transition" data-tab="setores">
+                    <span>Departamentos</span>
                 </button>
             </nav>
         </aside>
 
         <main class="flex-1 overflow-y-auto">
-            <div class="max-w-6xl mx-auto p-4 md:p-10 w-full">
+            <div class="max-w-7xl mx-auto p-4 md:p-10 w-full">
                 <div id="notification" class="fixed top-5 right-5 hidden transform transition-all duration-300 translate-y-[-20px] opacity-0 z-50">
-                    <div class="bg-slate-800 text-white px-6 py-3 rounded-lg shadow-2xl flex items-center gap-3">
+                    <div class="bg-slate-900 text-white px-6 py-3 rounded-xl shadow-2xl flex items-center gap-3 border border-white/10">
                         <span id="notification-msg">Acao realizada com sucesso!</span>
                     </div>
                 </div>
 
+                <section class="mb-8 overflow-hidden rounded-3xl bg-slate-900 text-white shadow-2xl border border-slate-800 relative">
+                    <div class="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(99,102,241,0.22),transparent_30%),radial-gradient(circle_at_bottom_left,rgba(14,165,233,0.2),transparent_28%)]"></div>
+                    <div class="relative p-6 md:p-8">
+                        <div class="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6">
+                            <div class="max-w-2xl">
+                                <p class="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs uppercase tracking-[0.28em] text-slate-300">Workspace de projetos</p>
+                                <h2 class="mt-4 text-3xl md:text-4xl font-bold tracking-tight">Organize entregas, equipes e prazos em um único painel.</h2>
+                                <p class="mt-3 text-slate-300 max-w-xl">Acompanhe projetos, responsáveis e departamentos com uma visão clara de progresso e priorização.</p>
+                            </div>
+                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 w-full lg:w-auto">
+                                <div class="rounded-2xl border border-white/10 bg-white/5 p-4 backdrop-blur">
+                                    <p class="text-sm text-slate-400">Projetos ativos</p>
+                                    <p class="mt-2 text-2xl font-semibold">12</p>
+                                </div>
+                                <div class="rounded-2xl border border-white/10 bg-white/5 p-4 backdrop-blur">
+                                    <p class="text-sm text-slate-400">Equipe</p>
+                                    <p class="mt-2 text-2xl font-semibold">28</p>
+                                </div>
+                                <div class="rounded-2xl border border-white/10 bg-white/5 p-4 backdrop-blur">
+                                    <p class="text-sm text-slate-400">Entregas da semana</p>
+                                    <p class="mt-2 text-2xl font-semibold">7</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
                 <section id="atividades" class="tab-content active">
                     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
-                        <h2 class="text-2xl font-bold">Gestao de Atividades</h2>
-                        <button onclick="openModal('atividade')" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg font-medium transition shadow-md">
-                            + Nova Atividade
+                        <h2 class="text-2xl font-bold">Gestao de Projetos</h2>
+                        <button onclick="openModal('atividade')" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg font-medium transition shadow-md">
+                            + Novo Projeto
                         </button>
                     </div>
-                    <div class="bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden">
+                    <div class="bg-white/85 backdrop-blur rounded-2xl shadow-sm border border-white overflow-hidden">
                         <div class="overflow-x-auto">
                             <table class="w-full text-left">
                                 <thead class="bg-slate-50 border-b">
                                     <tr>
-                                        <th class="p-4 font-semibold text-slate-600">Descricao</th>
-                                        <th class="p-4 font-semibold text-slate-600">Funcionario</th>
-                                        <th class="p-4 font-semibold text-slate-600">Setor</th>
-                                        <th class="p-4 font-semibold text-slate-600">Periodo</th>
+                                        <th class="p-4 font-semibold text-slate-600">Projeto</th>
+                                        <th class="p-4 font-semibold text-slate-600">Responsavel</th>
+                                        <th class="p-4 font-semibold text-slate-600">Departamento</th>
+                                        <th class="p-4 font-semibold text-slate-600">Prazo</th>
                                         <th class="p-4 font-semibold text-slate-600 text-right">Acoes</th>
                                     </tr>
                                 </thead>
@@ -87,18 +120,18 @@
 
                 <section id="funcionarios" class="tab-content">
                     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
-                        <h2 class="text-2xl font-bold">Gestao de Funcionarios</h2>
-                        <button onclick="openModal('funcionario')" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg font-medium transition shadow-md">
-                            + Novo Funcionario
+                        <h2 class="text-2xl font-bold">Gestao da Equipe</h2>
+                        <button onclick="openModal('funcionario')" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg font-medium transition shadow-md">
+                            + Novo Membro
                         </button>
                     </div>
-                    <div class="bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden">
+                    <div class="bg-white/85 backdrop-blur rounded-2xl shadow-sm border border-white overflow-hidden">
                         <div class="overflow-x-auto">
                             <table class="w-full text-left">
                                 <thead class="bg-slate-50 border-b">
                                     <tr>
                                         <th class="p-4 font-semibold text-slate-600">Nome</th>
-                                        <th class="p-4 font-semibold text-slate-600">Setor</th>
+                                        <th class="p-4 font-semibold text-slate-600">Departamento</th>
                                         <th class="p-4 font-semibold text-slate-600 text-right">Acoes</th>
                                     </tr>
                                 </thead>
@@ -110,17 +143,17 @@
 
                 <section id="setores" class="tab-content">
                     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
-                        <h2 class="text-2xl font-bold">Gestao de Setores</h2>
-                        <button onclick="openModal('setor')" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg font-medium transition shadow-md">
-                            + Novo Setor
+                        <h2 class="text-2xl font-bold">Gestao de Departamentos</h2>
+                        <button onclick="openModal('setor')" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg font-medium transition shadow-md">
+                            + Novo Departamento
                         </button>
                     </div>
-                    <div class="bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden">
+                    <div class="bg-white/85 backdrop-blur rounded-2xl shadow-sm border border-white overflow-hidden">
                         <div class="overflow-x-auto">
                             <table class="w-full text-left">
                                 <thead class="bg-slate-50 border-b">
                                     <tr>
-                                        <th class="p-4 font-semibold text-slate-600">Nome do Setor</th>
+                                        <th class="p-4 font-semibold text-slate-600">Nome do Departamento</th>
                                         <th class="p-4 font-semibold text-slate-600 text-right">Acoes</th>
                                     </tr>
                                 </thead>
@@ -135,7 +168,7 @@
 
     <div id="modal-container" class="fixed inset-0 bg-black/50 hidden flex items-center justify-center p-4 z-50 backdrop-blur-sm">
         <div id="modal-funcionario" class="modal-content hidden bg-white rounded-2xl shadow-2xl w-full max-w-md p-8">
-            <h3 class="text-xl font-bold mb-6" id="modal-title-func">Cadastrar Funcionario</h3>
+            <h3 class="text-xl font-bold mb-6" id="modal-title-func">Cadastrar Membro</h3>
             <form id="form-funcionario" class="space-y-4">
                 <input type="hidden" id="func-id">
                 <div>
@@ -143,7 +176,7 @@
                     <input type="text" id="func-nome" required class="w-full border p-2.5 rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none">
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-slate-700 mb-1">Setor</label>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">Departamento</label>
                     <select id="func-setor" required class="w-full border p-2.5 rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none bg-white"></select>
                 </div>
                 <div class="flex gap-3 pt-4">
@@ -154,11 +187,11 @@
         </div>
 
         <div id="modal-setor" class="modal-content hidden bg-white rounded-2xl shadow-2xl w-full max-w-md p-8">
-            <h3 class="text-xl font-bold mb-6" id="modal-title-setor">Cadastrar Setor</h3>
+            <h3 class="text-xl font-bold mb-6" id="modal-title-setor">Cadastrar Departamento</h3>
             <form id="form-setor" class="space-y-4">
                 <input type="hidden" id="setor-id">
                 <div>
-                    <label class="block text-sm font-medium text-slate-700 mb-1">Nome do Setor</label>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">Nome do Departamento</label>
                     <input type="text" id="setor-nome" required class="w-full border p-2.5 rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none">
                 </div>
                 <div class="flex gap-3 pt-4">
@@ -169,11 +202,11 @@
         </div>
 
         <div id="modal-atividade" class="modal-content hidden bg-white rounded-2xl shadow-2xl w-full max-w-lg p-8">
-            <h3 class="text-xl font-bold mb-6" id="modal-title-atv">Cadastrar Atividade</h3>
+            <h3 class="text-xl font-bold mb-6" id="modal-title-atv">Cadastrar Projeto</h3>
             <form id="form-atividade" class="space-y-4">
                 <input type="hidden" id="atv-id">
                 <div>
-                    <label class="block text-sm font-medium text-slate-700 mb-1">Descricao</label>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">Resumo do Projeto</label>
                     <textarea id="atv-descricao" required class="w-full border p-2.5 rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none" rows="2"></textarea>
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -182,7 +215,7 @@
                         <select id="atv-funcionario" required class="w-full border p-2.5 rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none bg-white"></select>
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-slate-700 mb-1">Setor</label>
+                        <label class="block text-sm font-medium text-slate-700 mb-1">Departamento</label>
                         <select id="atv-setor" disabled class="w-full border p-2.5 rounded-lg bg-slate-100 text-slate-600"></select>
                     </div>
                 </div>
@@ -198,7 +231,7 @@
                 </div>
                 <div class="flex gap-3 pt-4">
                     <button type="button" onclick="closeModal()" class="flex-1 px-4 py-2 bg-slate-100 rounded-lg font-medium hover:bg-slate-200 transition">Cancelar</button>
-                    <button type="submit" class="flex-1 px-4 py-2 bg-emerald-600 text-white rounded-lg font-medium hover:bg-emerald-700 transition">Salvar Atividade</button>
+                    <button type="submit" class="flex-1 px-4 py-2 bg-indigo-600 text-white rounded-lg font-medium hover:bg-indigo-700 transition">Salvar Projeto</button>
                 </div>
             </form>
         </div>
@@ -357,7 +390,7 @@
                 modal.classList.remove('hidden');
                 document.getElementById('form-funcionario').reset();
                 document.getElementById('func-id').value = '';
-                document.getElementById('modal-title-func').innerText = 'Cadastrar Funcionario';
+                document.getElementById('modal-title-func').innerText = 'Cadastrar Membro';
                 populateFuncionarioSetorSelect();
 
                 if (editId) {
@@ -365,7 +398,7 @@
                     document.getElementById('func-id').value = item.id;
                     document.getElementById('func-nome').value = item.nome;
                     document.getElementById('func-setor').value = item.setorId || '';
-                    document.getElementById('modal-title-func').innerText = 'Editar Funcionario';
+                    document.getElementById('modal-title-func').innerText = 'Editar Membro';
                 }
             }
 
@@ -374,13 +407,13 @@
                 modal.classList.remove('hidden');
                 document.getElementById('form-setor').reset();
                 document.getElementById('setor-id').value = '';
-                document.getElementById('modal-title-setor').innerText = 'Cadastrar Setor';
+                document.getElementById('modal-title-setor').innerText = 'Cadastrar Departamento';
 
                 if (editId) {
                     const item = state.setores.find(s => String(s.id) === String(editId));
                     document.getElementById('setor-id').value = item.id;
                     document.getElementById('setor-nome').value = item.nome;
-                    document.getElementById('modal-title-setor').innerText = 'Editar Setor';
+                    document.getElementById('modal-title-setor').innerText = 'Editar Departamento';
                 }
             }
 
@@ -389,7 +422,7 @@
                 modal.classList.remove('hidden');
                 document.getElementById('form-atividade').reset();
                 document.getElementById('atv-id').value = '';
-                document.getElementById('modal-title-atv').innerText = 'Cadastrar Atividade';
+                document.getElementById('modal-title-atv').innerText = 'Cadastrar Projeto';
                 populateAtividadeSelects();
 
                 if (editId) {
@@ -399,7 +432,7 @@
                     document.getElementById('atv-funcionario').value = item.funcionarioId || '';
                     document.getElementById('atv-inicio').value = item.inicio;
                     document.getElementById('atv-fim').value = item.fim;
-                    document.getElementById('modal-title-atv').innerText = 'Editar Atividade';
+                    document.getElementById('modal-title-atv').innerText = 'Editar Projeto';
                     updateAtividadeSetorDisplay();
                 }
             }
@@ -416,8 +449,8 @@
                     <td class="p-4 font-medium">${f.nome}</td>
                     <td class="p-4 text-slate-600">${f.setorNome}</td>
                     <td class="p-4 text-right whitespace-nowrap">
-                        <button onclick="openModal('funcionario', ${f.id})" class="text-blue-600 hover:text-blue-800 font-medium mr-4">Editar</button>
-                        <button onclick="deleteItem('funcionarios', ${f.id})" class="text-red-600 hover:text-red-800 font-medium">Excluir</button>
+                        <button onclick="openModal('funcionario', ${f.id})" class="text-indigo-600 hover:text-indigo-800 font-medium mr-4">Editar</button>
+                        <button onclick="deleteItem('funcionarios', ${f.id})" class="text-rose-600 hover:text-rose-800 font-medium">Excluir</button>
                     </td>
                 </tr>
             `).join('');
@@ -427,8 +460,8 @@
                 <tr class="hover:bg-slate-50 transition">
                     <td class="p-4 font-medium">${s.nome}</td>
                     <td class="p-4 text-right whitespace-nowrap">
-                        <button onclick="openModal('setor', ${s.id})" class="text-blue-600 hover:text-blue-800 font-medium mr-4">Editar</button>
-                        <button onclick="deleteItem('setores', ${s.id})" class="text-red-600 hover:text-red-800 font-medium">Excluir</button>
+                        <button onclick="openModal('setor', ${s.id})" class="text-indigo-600 hover:text-indigo-800 font-medium mr-4">Editar</button>
+                        <button onclick="deleteItem('setores', ${s.id})" class="text-rose-600 hover:text-rose-800 font-medium">Excluir</button>
                     </td>
                 </tr>
             `).join('');
@@ -450,8 +483,8 @@
                             ${formatData(a.inicio)} ate ${formatData(a.fim)}
                         </td>
                         <td class="p-4 text-right whitespace-nowrap">
-                            <button onclick="openModal('atividade', ${a.id})" class="text-blue-600 hover:text-blue-800 font-medium mr-4">Editar</button>
-                            <button onclick="deleteItem('atividades', ${a.id})" class="text-red-600 hover:text-red-800 font-medium">Excluir</button>
+                            <button onclick="openModal('atividade', ${a.id})" class="text-indigo-600 hover:text-indigo-800 font-medium mr-4">Editar</button>
+                            <button onclick="deleteItem('atividades', ${a.id})" class="text-rose-600 hover:text-rose-800 font-medium">Excluir</button>
                         </td>
                     </tr>
                 `;
@@ -463,7 +496,7 @@
                 if (collection === 'funcionarios') {
                     const vinculadoProjeto = state.atividades.some(a => String(a.funcionarioId) === String(id));
                     if (vinculadoProjeto) {
-                        showNotification('Aviso: Funcionario vinculado a atividades.');
+                        showNotification('Aviso: Membro vinculado a projetos.');
                         return;
                     }
                     await apiFetch(`/Funcionario/DeleteFuncionario/${id}`, { method: 'DELETE' });
@@ -472,7 +505,7 @@
                 if (collection === 'setores') {
                     const vinculadoFuncionario = state.funcionarios.some(f => String(f.setorId) === String(id));
                     if (vinculadoFuncionario) {
-                        showNotification('Aviso: Setor vinculado a funcionarios.');
+                        showNotification('Aviso: Departamento vinculado a membros.');
                         return;
                     }
                     await apiFetch(`/Setor/DeleteSetor/${id}`, { method: 'DELETE' });
@@ -517,7 +550,7 @@
                 closeModal();
                 await loadAllData();
                 render();
-                showNotification('Funcionario salvo com sucesso!');
+                showNotification('Membro salvo com sucesso!');
             } catch (error) {
                 showError(error);
             }
@@ -544,7 +577,7 @@
                 closeModal();
                 await loadAllData();
                 render();
-                showNotification('Setor salvo com sucesso!');
+                showNotification('Departamento salvo com sucesso!');
             } catch (error) {
                 showError(error);
             }
@@ -578,7 +611,7 @@
                 closeModal();
                 await loadAllData();
                 render();
-                showNotification('Atividade salva com sucesso!');
+                showNotification('Projeto salvo com sucesso!');
             } catch (error) {
                 showError(error);
             }
