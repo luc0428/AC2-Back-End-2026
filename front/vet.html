@@ -333,28 +333,63 @@
     </div>
 
     <script>
-        // --- Gerenciamento de Estado ---
-        const DB_KEY = 'vet_connect_db_v1';
+        const API_BASE = 'http://localhost:8080';
+
         let state = {
             tutors: [],
             vets: [],
             pets: [],
             appointments: [],
-            records: []
+            prontuarios: [],
+            vacinacoes: []
         };
 
-        function initStorage() {
-            const saved = localStorage.getItem(DB_KEY);
-            if (saved) {
-                state = JSON.parse(saved);
+        async function apiRequest(path, options = {}) {
+            const response = await fetch(`${API_BASE}${path}`, {
+                headers: { 'Content-Type': 'application/json' },
+                ...options
+            });
+
+            if (!response.ok) {
+                const text = await response.text();
+                throw new Error(text || 'Erro ao chamar API');
             }
-            updateUI();
-            showSection('pets'); // Iniciar na aba de Pets
+
+            if (response.status === 204) {
+                return null;
+            }
+
+            return response.json();
         }
 
-        function saveToStorage() {
-            localStorage.setItem(DB_KEY, JSON.stringify(state));
+        async function loadAllData() {
+            const [tutors, vets, pets, appointments, prontuarios, vacinacoes] = await Promise.all([
+                apiRequest('/Tutor/ReadTutor'),
+                apiRequest('/Veterinario/ReadVeterinario'),
+                apiRequest('/Animal/ReadAnimal'),
+                apiRequest('/Consulta/ReadConsulta'),
+                apiRequest('/Prontuario/ReadProntuario'),
+                apiRequest('/Vacinacao/ReadVacinacao')
+            ]);
+
+            state.tutors = tutors || [];
+            state.vets = vets || [];
+            state.pets = pets || [];
+            state.appointments = appointments || [];
+            state.prontuarios = prontuarios || [];
+            state.vacinacoes = vacinacoes || [];
+
             updateUI();
+        }
+
+        async function initApp() {
+            try {
+                await loadAllData();
+            } catch (error) {
+                notify(error.message || 'Erro ao carregar dados');
+            }
+
+            showSection('pets');
         }
 
         // --- Navegação ---
@@ -409,145 +444,229 @@
         // --- Funções Auxiliares de População ---
         function populateTutorSelect() {
             const select = document.getElementById('pet-tutor-id');
-            select.innerHTML = state.tutors.map(t => `<option value="${t.id}">${t.name}</option>`).join('') || '<option disabled>Cadastre um tutor primeiro</option>';
+            select.innerHTML = state.tutors.map(t => `<option value="${t.id}">${t.nome}</option>`).join('') || '<option disabled>Cadastre um tutor primeiro</option>';
         }
 
         function populateVetSelect() {
             const select = document.getElementById('appointment-vet-id');
-            select.innerHTML = state.vets.map(v => `<option value="${v.id}">${v.name} (${v.specialty})</option>`).join('') || '<option disabled>Cadastre um veterinário primeiro</option>';
+            select.innerHTML = state.vets.map(v => `<option value="${v.id}">${v.nome} (${v.especialidade})</option>`).join('') || '<option disabled>Cadastre um veterinário primeiro</option>';
         }
 
         function populatePetSelect(id) {
             const select = document.getElementById(id);
-            select.innerHTML = state.pets.map(p => `<option value="${p.id}">${p.name}</option>`).join('') || '<option disabled>Cadastre um pet primeiro</option>';
+            select.innerHTML = state.pets.map(p => `<option value="${p.id}">${p.nome}</option>`).join('') || '<option disabled>Cadastre um pet primeiro</option>';
         }
 
         // --- CRUD Logic ---
 
         // Tutores
-        document.getElementById('tutor-form').onsubmit = (e) => {
+        document.getElementById('tutor-form').onsubmit = async (e) => {
             e.preventDefault();
             const id = document.getElementById('tutor-id').value;
             const tutorData = {
-                id: id || Date.now().toString(),
-                name: document.getElementById('tutor-name').value,
-                phone: document.getElementById('tutor-phone').value
+                nome: document.getElementById('tutor-name').value,
+                telefone: document.getElementById('tutor-phone').value,
+                email: ''
             };
-            if (id) {
-                const idx = state.tutors.findIndex(t => t.id === id);
-                state.tutors[idx] = tutorData;
-            } else {
-                state.tutors.push(tutorData);
+
+            try {
+                if (id) {
+                    await apiRequest(`/Tutor/UpdateTutor/${id}`, {
+                        method: 'PUT',
+                        body: JSON.stringify({ id: Number(id), ...tutorData })
+                    });
+                } else {
+                    await apiRequest('/Tutor', {
+                        method: 'POST',
+                        body: JSON.stringify(tutorData)
+                    });
+                }
+                await loadAllData();
+                closeModal('tutor-modal');
+                notify('Tutor salvo!');
+            } catch (error) {
+                notify(error.message || 'Erro ao salvar tutor');
             }
-            saveToStorage();
-            closeModal('tutor-modal');
-            notify('Tutor salvo!');
         };
 
         function editTutor(id) {
-            const tutor = state.tutors.find(t => t.id === id);
+            const tutor = state.tutors.find(t => t.id === Number(id));
             document.getElementById('tutor-id').value = tutor.id;
-            document.getElementById('tutor-name').value = tutor.name;
-            document.getElementById('tutor-phone').value = tutor.phone;
+            document.getElementById('tutor-name').value = tutor.nome;
+            document.getElementById('tutor-phone').value = tutor.telefone;
             document.getElementById('tutor-modal-title').textContent = 'Editar Tutor';
             openModal('tutor-modal');
         }
 
-        function deleteTutor(id) {
-            state.tutors = state.tutors.filter(t => t.id !== id);
-            saveToStorage();
+        async function deleteTutor(id) {
+            try {
+                await apiRequest(`/Tutor/DeleteTutor/${id}`, { method: 'DELETE' });
+                await loadAllData();
+            } catch (error) {
+                notify(error.message || 'Erro ao excluir tutor');
+            }
         }
 
         // Vets
-        document.getElementById('vet-form').onsubmit = (e) => {
+        document.getElementById('vet-form').onsubmit = async (e) => {
             e.preventDefault();
             const vetData = {
-                id: Date.now().toString(),
-                name: document.getElementById('vet-name').value,
-                specialty: document.getElementById('vet-specialty').value
+                nome: document.getElementById('vet-name').value,
+                especialidade: document.getElementById('vet-specialty').value,
+                crmv: ''
             };
-            state.vets.push(vetData);
-            saveToStorage();
-            closeModal('vet-modal');
-            notify('Veterinário cadastrado!');
+
+            try {
+                await apiRequest('/Veterinario', {
+                    method: 'POST',
+                    body: JSON.stringify(vetData)
+                });
+                await loadAllData();
+                closeModal('vet-modal');
+                notify('Veterinário cadastrado!');
+            } catch (error) {
+                notify(error.message || 'Erro ao cadastrar veterinário');
+            }
         };
 
-        function deleteVet(id) {
-            state.vets = state.vets.filter(v => v.id !== id);
-            saveToStorage();
+        async function deleteVet(id) {
+            try {
+                await apiRequest(`/Veterinario/DeleteVeterinario/${id}`, { method: 'DELETE' });
+                await loadAllData();
+            } catch (error) {
+                notify(error.message || 'Erro ao excluir veterinário');
+            }
         }
 
         // Pets
-        document.getElementById('pet-form').onsubmit = (e) => {
+        document.getElementById('pet-form').onsubmit = async (e) => {
             e.preventDefault();
             const petData = {
-                id: Date.now().toString(),
-                name: document.getElementById('pet-name').value,
-                species: document.getElementById('pet-species').value,
-                breed: document.getElementById('pet-breed').value,
-                tutorId: document.getElementById('pet-tutor-id').value
+                nome: document.getElementById('pet-name').value,
+                especie: document.getElementById('pet-species').value,
+                raca: document.getElementById('pet-breed').value,
+                dataNascimento: null,
+                tutor: { id: Number(document.getElementById('pet-tutor-id').value) }
             };
-            state.pets.push(petData);
-            saveToStorage();
-            closeModal('pet-modal');
-            notify('Pet salvo!');
+
+            try {
+                await apiRequest('/Animal', {
+                    method: 'POST',
+                    body: JSON.stringify(petData)
+                });
+                await loadAllData();
+                closeModal('pet-modal');
+                notify('Pet salvo!');
+            } catch (error) {
+                notify(error.message || 'Erro ao salvar pet');
+            }
         };
 
-        function deletePet(id) {
-            state.pets = state.pets.filter(p => p.id !== id);
-            saveToStorage();
+        async function deletePet(id) {
+            try {
+                await apiRequest(`/Animal/DeleteAnimal/${id}`, { method: 'DELETE' });
+                await loadAllData();
+            } catch (error) {
+                notify(error.message || 'Erro ao excluir pet');
+            }
         }
 
         // Appointments
-        document.getElementById('appointment-form').onsubmit = (e) => {
+        document.getElementById('appointment-form').onsubmit = async (e) => {
             e.preventDefault();
             const appData = {
-                id: Date.now().toString(),
-                date: document.getElementById('appointment-date').value,
-                petId: document.getElementById('appointment-pet-id').value,
-                vetId: document.getElementById('appointment-vet-id').value
+                dataHora: document.getElementById('appointment-date').value,
+                motivo: '',
+                especialidadeRequerida: '',
+                animal: { id: Number(document.getElementById('appointment-pet-id').value) },
+                veterinario: { id: Number(document.getElementById('appointment-vet-id').value) }
             };
-            state.appointments.push(appData);
-            saveToStorage();
-            closeModal('appointment-modal');
-            notify('Agendado!');
+
+            try {
+                await apiRequest('/Consulta', {
+                    method: 'POST',
+                    body: JSON.stringify(appData)
+                });
+                await loadAllData();
+                closeModal('appointment-modal');
+                notify('Agendado!');
+            } catch (error) {
+                notify(error.message || 'Erro ao agendar consulta');
+            }
         };
 
-        function deleteAppointment(id) {
-            state.appointments = state.appointments.filter(a => a.id !== id);
-            saveToStorage();
+        async function deleteAppointment(id) {
+            try {
+                await apiRequest(`/Consulta/DeleteConsulta/${id}`, { method: 'DELETE' });
+                await loadAllData();
+            } catch (error) {
+                notify(error.message || 'Erro ao excluir consulta');
+            }
         }
 
         // Records
-        document.getElementById('record-form').onsubmit = (e) => {
+        document.getElementById('record-form').onsubmit = async (e) => {
             e.preventDefault();
-            const recordData = {
-                id: Date.now().toString(),
-                date: document.getElementById('record-date').value,
-                petId: document.getElementById('record-pet-id').value,
-                type: document.getElementById('record-type').value,
-                desc: document.getElementById('record-desc').value
-            };
-            state.records.push(recordData);
-            saveToStorage();
-            closeModal('record-modal');
-            notify('Registro adicionado!');
+            const type = document.getElementById('record-type').value;
+            const petId = Number(document.getElementById('record-pet-id').value);
+            const date = document.getElementById('record-date').value;
+            const desc = document.getElementById('record-desc').value;
+
+            try {
+                if (type === 'Vacina') {
+                    const vacinacaoData = {
+                        vacina: desc,
+                        dataAplicacao: date,
+                        proximaDose: null,
+                        animal: { id: petId }
+                    };
+                    await apiRequest('/Vacinacao', {
+                        method: 'POST',
+                        body: JSON.stringify(vacinacaoData)
+                    });
+                } else {
+                    const prontuarioData = {
+                        dataRegistro: date,
+                        descricao: desc,
+                        animal: { id: petId },
+                        consulta: null
+                    };
+                    await apiRequest('/Prontuario', {
+                        method: 'POST',
+                        body: JSON.stringify(prontuarioData)
+                    });
+                }
+
+                await loadAllData();
+                closeModal('record-modal');
+                notify('Registro adicionado!');
+            } catch (error) {
+                notify(error.message || 'Erro ao registrar');
+            }
         };
 
-        function deleteRecord(id) {
-            state.records = state.records.filter(r => r.id !== id);
-            saveToStorage();
+        async function deleteRecord(id, type) {
+            try {
+                if (type === 'Vacina') {
+                    await apiRequest(`/Vacinacao/DeleteVacinacao/${id}`, { method: 'DELETE' });
+                } else {
+                    await apiRequest(`/Prontuario/DeleteProntuario/${id}`, { method: 'DELETE' });
+                }
+                await loadAllData();
+            } catch (error) {
+                notify(error.message || 'Erro ao excluir registro');
+            }
         }
 
         // --- Atualização da UI ---
         function updateUI() {
             // Tabela Pets
             document.getElementById('table-pets').innerHTML = state.pets.map(p => {
-                const tutor = state.tutors.find(t => t.id === p.tutorId);
+                const tutor = state.tutors.find(t => t.id === (p.tutor ? p.tutor.id : null));
                 return `<tr>
-                    <td class="px-6 py-4 font-medium">${p.name}</td>
-                    <td class="px-6 py-4 text-gray-500">${p.species} / ${p.breed}</td>
-                    <td class="px-6 py-4 text-gray-500">${tutor ? tutor.name : 'N/A'}</td>
+                    <td class="px-6 py-4 font-medium">${p.nome}</td>
+                    <td class="px-6 py-4 text-gray-500">${p.especie} / ${p.raca}</td>
+                    <td class="px-6 py-4 text-gray-500">${tutor ? tutor.nome : 'N/A'}</td>
                     <td class="px-6 py-4 text-right">
                         <button onclick="deletePet('${p.id}')" class="text-red-500 hover:underline">Excluir</button>
                     </td>
@@ -556,8 +675,8 @@
 
             // Tabela Tutores
             document.getElementById('table-tutors').innerHTML = state.tutors.map(t => `<tr>
-                <td class="px-6 py-4 font-medium">${t.name}</td>
-                <td class="px-6 py-4 text-gray-500">${t.phone}</td>
+                <td class="px-6 py-4 font-medium">${t.nome}</td>
+                <td class="px-6 py-4 text-gray-500">${t.telefone}</td>
                 <td class="px-6 py-4 text-right space-x-2">
                     <button onclick="editTutor('${t.id}')" class="text-teal-600 hover:underline">Editar</button>
                     <button onclick="deleteTutor('${t.id}')" class="text-red-500 hover:underline">Excluir</button>
@@ -566,8 +685,8 @@
 
             // Tabela Vets
             document.getElementById('table-vets').innerHTML = state.vets.map(v => `<tr>
-                <td class="px-6 py-4 font-medium">${v.name}</td>
-                <td class="px-6 py-4 text-gray-500">${v.specialty}</td>
+                <td class="px-6 py-4 font-medium">${v.nome}</td>
+                <td class="px-6 py-4 text-gray-500">${v.especialidade}</td>
                 <td class="px-6 py-4 text-right">
                     <button onclick="deleteVet('${v.id}')" class="text-red-500 hover:underline">Excluir</button>
                 </td>
@@ -575,12 +694,12 @@
 
             // Tabela Agendamentos
             document.getElementById('table-appointments').innerHTML = state.appointments.map(a => {
-                const pet = state.pets.find(p => p.id === a.petId);
-                const vet = state.vets.find(v => v.id === a.vetId);
+                const pet = state.pets.find(p => p.id === (a.animal ? a.animal.id : null));
+                const vet = state.vets.find(v => v.id === (a.veterinario ? a.veterinario.id : null));
                 return `<tr>
-                    <td class="px-6 py-4 font-medium">${new Date(a.date).toLocaleString('pt-BR')}</td>
-                    <td class="px-6 py-4 text-gray-500">${pet ? pet.name : '...'}</td>
-                    <td class="px-6 py-4 text-gray-500">${vet ? vet.name : '...'}</td>
+                    <td class="px-6 py-4 font-medium">${a.dataHora ? new Date(a.dataHora).toLocaleString('pt-BR') : ''}</td>
+                    <td class="px-6 py-4 text-gray-500">${pet ? pet.nome : '...'}</td>
+                    <td class="px-6 py-4 text-gray-500">${vet ? vet.nome : '...'}</td>
                     <td class="px-6 py-4 text-right">
                         <button onclick="deleteAppointment('${a.id}')" class="text-red-500 hover:underline">Excluir</button>
                     </td>
@@ -588,22 +707,39 @@
             }).join('') || '<tr><td colspan="4" class="px-6 py-4 text-center text-gray-400">Vazio.</td></tr>';
 
             // Tabela Prontuários
-            document.getElementById('table-records').innerHTML = state.records.map(r => {
+            const records = [
+                ...state.prontuarios.map(p => ({
+                    id: p.id,
+                    date: p.dataRegistro,
+                    petId: p.animal ? p.animal.id : null,
+                    type: 'Consulta',
+                    desc: p.descricao
+                })),
+                ...state.vacinacoes.map(v => ({
+                    id: v.id,
+                    date: v.dataAplicacao,
+                    petId: v.animal ? v.animal.id : null,
+                    type: 'Vacina',
+                    desc: v.vacina
+                }))
+            ];
+
+            document.getElementById('table-records').innerHTML = records.map(r => {
                 const pet = state.pets.find(p => p.id === r.petId);
                 const color = r.type === 'Vacina' ? 'bg-purple-100 text-purple-700' : 'bg-orange-100 text-orange-700';
                 return `<tr>
-                    <td class="px-6 py-4 font-medium">${new Date(r.date).toLocaleDateString('pt-BR')}</td>
-                    <td class="px-6 py-4 text-gray-500">${pet ? pet.name : '...'}</td>
+                    <td class="px-6 py-4 font-medium">${r.date ? new Date(r.date).toLocaleDateString('pt-BR') : ''}</td>
+                    <td class="px-6 py-4 text-gray-500">${pet ? pet.nome : '...'}</td>
                     <td class="px-6 py-4"><span class="px-2 py-1 ${color} text-xs rounded-full">${r.type}</span></td>
                     <td class="px-6 py-4 text-gray-500 truncate max-w-xs">${r.desc}</td>
                     <td class="px-6 py-4 text-right">
-                        <button onclick="deleteRecord('${r.id}')" class="text-red-500 hover:underline">Excluir</button>
+                        <button onclick="deleteRecord('${r.id}', '${r.type}')" class="text-red-500 hover:underline">Excluir</button>
                     </td>
                 </tr>`;
             }).join('') || '<tr><td colspan="5" class="px-6 py-4 text-center text-gray-400">Vazio.</td></tr>';
         }
 
-        window.onload = initStorage;
+        window.onload = initApp;
     </script>
 </body>
 </html>
