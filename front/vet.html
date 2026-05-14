@@ -1,0 +1,783 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VetConnect - Clínica Veterinária</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .sidebar-link.active {
+            background-color: #f3f4f6;
+            color: #0d9488;
+            border-right: 4px solid #0d9488;
+        }
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #f1f1f1; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #0d9488; border-radius: 10px; }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+
+    <div class="flex h-screen overflow-hidden">
+        <!-- Sidebar -->
+        <aside class="w-64 bg-white border-r border-gray-200 flex-shrink-0 hidden md:flex flex-col">
+            <div class="p-6">
+                <div class="flex items-center space-x-2 text-teal-600">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                    </svg>
+                    <span class="text-xl font-bold tracking-tight">VetConnect</span>
+                </div>
+            </div>
+            <nav class="flex-1 px-4 space-y-1">
+                <button onclick="showSection('pets')" id="btn-pets" class="sidebar-link w-full flex items-center px-4 py-3 text-sm font-medium rounded-lg text-gray-600 hover:bg-gray-50 active">
+                    <svg class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" /></svg>
+                    Animais (Pets)
+                </button>
+                <button onclick="showSection('tutors')" id="btn-tutors" class="sidebar-link w-full flex items-center px-4 py-3 text-sm font-medium rounded-lg text-gray-600 hover:bg-gray-50">
+                    <svg class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
+                    Tutores
+                </button>
+                <button onclick="showSection('vets')" id="btn-vets" class="sidebar-link w-full flex items-center px-4 py-3 text-sm font-medium rounded-lg text-gray-600 hover:bg-gray-50">
+                    <svg class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" /></svg>
+                    Veterinários
+                </button>
+                <button onclick="showSection('appointments')" id="btn-appointments" class="sidebar-link w-full flex items-center px-4 py-3 text-sm font-medium rounded-lg text-gray-600 hover:bg-gray-50">
+                    <svg class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                    Agendamentos
+                </button>
+                <button onclick="showSection('records')" id="btn-records" class="sidebar-link w-full flex items-center px-4 py-3 text-sm font-medium rounded-lg text-gray-600 hover:bg-gray-50">
+                    <svg class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+                    Prontuários & Vacinas
+                </button>
+            </nav>
+            <div class="p-4 border-t border-gray-200">
+                <p class="text-xs text-gray-500 text-center">© 2024 VetConnect System</p>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 flex flex-col overflow-hidden">
+            <!-- Topbar -->
+            <header class="bg-white border-b border-gray-200 h-16 flex items-center justify-between px-6">
+                <h2 id="section-title" class="text-lg font-semibold text-gray-800">Animais (Pets)</h2>
+                <div class="flex items-center space-x-4">
+                    <div id="notification-area"></div>
+                    <div class="h-8 w-8 rounded-full bg-teal-100 flex items-center justify-center text-teal-600 font-bold">A</div>
+                </div>
+            </header>
+
+            <!-- Scrollable Content Container -->
+            <div id="content-area" class="flex-1 overflow-y-auto p-6 custom-scrollbar">
+                
+                <!-- Section: Pets -->
+                <section id="section-pets" class="space-y-6">
+                    <div class="flex justify-between items-center">
+                        <h3 class="text-xl font-bold">Gestão de Animais</h3>
+                        <button onclick="openModal('pet-modal')" class="bg-teal-600 text-white px-4 py-2 rounded-lg hover:bg-teal-700 transition flex items-center">
+                            <svg class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" /></svg>
+                            Novo Pet
+                        </button>
+                    </div>
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                        <table class="w-full text-left">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-xs font-bold text-gray-500 uppercase tracking-wider">Nome do Pet</th>
+                                    <th class="px-6 py-3 text-xs font-bold text-gray-500 uppercase tracking-wider">Espécie/Raça</th>
+                                    <th class="px-6 py-3 text-xs font-bold text-gray-500 uppercase tracking-wider">Tutor Responsável</th>
+                                    <th class="px-6 py-3 text-xs font-bold text-gray-500 uppercase tracking-wider text-right">Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="table-pets" class="divide-y divide-gray-100"></tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <!-- Section: Tutores -->
+                <section id="section-tutors" class="hidden space-y-6">
+                    <div class="flex justify-between items-center">
+                        <h3 class="text-xl font-bold">Gestão de Tutores</h3>
+                        <button onclick="openModal('tutor-modal')" class="bg-teal-600 text-white px-4 py-2 rounded-lg hover:bg-teal-700 transition flex items-center">
+                            <svg class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" /></svg>
+                            Novo Tutor
+                        </button>
+                    </div>
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                        <table class="w-full text-left">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-xs font-bold text-gray-500 uppercase tracking-wider">Nome</th>
+                                    <th class="px-6 py-3 text-xs font-bold text-gray-500 uppercase tracking-wider">Telefone</th>
+                                    <th class="px-6 py-3 text-xs font-bold text-gray-500 uppercase tracking-wider text-right">Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="table-tutors" class="divide-y divide-gray-100"></tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <!-- Section: Veterinários -->
+                <section id="section-vets" class="hidden space-y-6">
+                    <div class="flex justify-between items-center">
+                        <h3 class="text-xl font-bold">Gestão de Veterinários</h3>
+                        <button onclick="openModal('vet-modal')" class="bg-teal-600 text-white px-4 py-2 rounded-lg hover:bg-teal-700 transition flex items-center">
+                            <svg class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" /></svg>
+                            Novo Veterinário
+                        </button>
+                    </div>
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                        <table class="w-full text-left">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-xs font-bold text-gray-500 uppercase tracking-wider">Nome</th>
+                                    <th class="px-6 py-3 text-xs font-bold text-gray-500 uppercase tracking-wider">Especialidade</th>
+                                    <th class="px-6 py-3 text-xs font-bold text-gray-500 uppercase tracking-wider text-right">Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="table-vets" class="divide-y divide-gray-100"></tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <!-- Section: Agendamentos -->
+                <section id="section-appointments" class="hidden space-y-6">
+                    <div class="flex justify-between items-center">
+                        <h3 class="text-xl font-bold">Agendamento de Consultas</h3>
+                        <button onclick="openModal('appointment-modal')" class="bg-teal-600 text-white px-4 py-2 rounded-lg hover:bg-teal-700 transition flex items-center">
+                            <svg class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" /></svg>
+                            Agendar Consulta
+                        </button>
+                    </div>
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                        <table class="w-full text-left">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-xs font-bold text-gray-500 uppercase tracking-wider">Data/Hora</th>
+                                    <th class="px-6 py-3 text-xs font-bold text-gray-500 uppercase tracking-wider">Pet</th>
+                                    <th class="px-6 py-3 text-xs font-bold text-gray-500 uppercase tracking-wider">Veterinário</th>
+                                    <th class="px-6 py-3 text-xs font-bold text-gray-500 uppercase tracking-wider text-right">Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="table-appointments" class="divide-y divide-gray-100"></tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <!-- Section: Prontuários e Vacinas -->
+                <section id="section-records" class="hidden space-y-6">
+                    <div class="flex justify-between items-center">
+                        <h3 class="text-xl font-bold">Prontuário & Vacinação</h3>
+                        <button onclick="openModal('record-modal')" class="bg-teal-600 text-white px-4 py-2 rounded-lg hover:bg-teal-700 transition flex items-center">
+                            <svg class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" /></svg>
+                            Novo Registro Médico
+                        </button>
+                    </div>
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                        <table class="w-full text-left">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-xs font-bold text-gray-500 uppercase tracking-wider">Data</th>
+                                    <th class="px-6 py-3 text-xs font-bold text-gray-500 uppercase tracking-wider">Pet</th>
+                                    <th class="px-6 py-3 text-xs font-bold text-gray-500 uppercase tracking-wider">Tipo</th>
+                                    <th class="px-6 py-3 text-xs font-bold text-gray-500 uppercase tracking-wider">Descrição / Vacina</th>
+                                    <th class="px-6 py-3 text-xs font-bold text-gray-500 uppercase tracking-wider text-right">Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="table-records" class="divide-y divide-gray-100"></tbody>
+                        </table>
+                    </div>
+                </section>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- Modals (Tutores, Vets, Pets, Agendamentos, Prontuários) -->
+    <!-- Tutor Modal -->
+    <div id="tutor-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50">
+        <div class="bg-white rounded-xl p-8 w-full max-w-md">
+            <h4 class="text-xl font-bold mb-6" id="tutor-modal-title">Cadastrar Tutor</h4>
+            <form id="tutor-form" class="space-y-4">
+                <input type="hidden" id="tutor-id">
+                <div>
+                    <label class="block text-sm font-medium mb-1">Nome Completo</label>
+                    <input type="text" id="tutor-name" class="w-full border p-2 rounded-lg focus:ring-2 focus:ring-teal-500 outline-none" required>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-1">Telefone</label>
+                    <input type="tel" id="tutor-phone" class="w-full border p-2 rounded-lg focus:ring-2 focus:ring-teal-500 outline-none" required>
+                </div>
+                <div class="flex justify-end space-x-3 pt-4">
+                    <button type="button" onclick="closeModal('tutor-modal')" class="px-4 py-2 text-gray-600">Cancelar</button>
+                    <button type="submit" class="px-4 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Vet Modal -->
+    <div id="vet-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50">
+        <div class="bg-white rounded-xl p-8 w-full max-w-md">
+            <h4 class="text-xl font-bold mb-6" id="vet-modal-title">Cadastrar Veterinário</h4>
+            <form id="vet-form" class="space-y-4">
+                <input type="hidden" id="vet-id">
+                <div>
+                    <label class="block text-sm font-medium mb-1">Nome do Veterinário</label>
+                    <input type="text" id="vet-name" class="w-full border p-2 rounded-lg focus:ring-2 focus:ring-teal-500 outline-none" required>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-1">Especialidade</label>
+                    <input type="text" id="vet-specialty" class="w-full border p-2 rounded-lg focus:ring-2 focus:ring-teal-500 outline-none" required>
+                </div>
+                <div class="flex justify-end space-x-3 pt-4">
+                    <button type="button" onclick="closeModal('vet-modal')" class="px-4 py-2 text-gray-600">Cancelar</button>
+                    <button type="submit" class="px-4 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Pet Modal -->
+    <div id="pet-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50">
+        <div class="bg-white rounded-xl p-8 w-full max-w-md">
+            <h4 class="text-xl font-bold mb-6" id="pet-modal-title">Cadastrar Pet</h4>
+            <form id="pet-form" class="space-y-4">
+                <input type="hidden" id="pet-id">
+                <div>
+                    <label class="block text-sm font-medium mb-1">Nome do Pet</label>
+                    <input type="text" id="pet-name" class="w-full border p-2 rounded-lg focus:ring-2 focus:ring-teal-500 outline-none" required>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium mb-1">Espécie</label>
+                        <input type="text" id="pet-species" class="w-full border p-2 rounded-lg focus:ring-2 focus:ring-teal-500 outline-none" placeholder="Cão, Gato..." required>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-1">Raça</label>
+                        <input type="text" id="pet-breed" class="w-full border p-2 rounded-lg focus:ring-2 focus:ring-teal-500 outline-none" required>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-1">Tutor</label>
+                    <select id="pet-tutor-id" class="w-full border p-2 rounded-lg focus:ring-2 focus:ring-teal-500 outline-none" required></select>
+                </div>
+                <div class="flex justify-end space-x-3 pt-4">
+                    <button type="button" onclick="closeModal('pet-modal')" class="px-4 py-2 text-gray-600">Cancelar</button>
+                    <button type="submit" class="px-4 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Appointment Modal -->
+    <div id="appointment-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50">
+        <div class="bg-white rounded-xl p-8 w-full max-w-md">
+            <h4 class="text-xl font-bold mb-6">Novo Agendamento</h4>
+            <form id="appointment-form" class="space-y-4">
+                <input type="hidden" id="appointment-id">
+                <div>
+                    <label class="block text-sm font-medium mb-1">Data e Hora</label>
+                    <input type="datetime-local" id="appointment-date" class="w-full border p-2 rounded-lg focus:ring-2 focus:ring-teal-500 outline-none" required>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-1">Pet</label>
+                    <select id="appointment-pet-id" class="w-full border p-2 rounded-lg focus:ring-2 focus:ring-teal-500 outline-none" required></select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-1">Veterinário</label>
+                    <select id="appointment-vet-id" class="w-full border p-2 rounded-lg focus:ring-2 focus:ring-teal-500 outline-none" required></select>
+                </div>
+                <div class="flex justify-end space-x-3 pt-4">
+                    <button type="button" onclick="closeModal('appointment-modal')" class="px-4 py-2 text-gray-600">Cancelar</button>
+                    <button type="submit" class="px-4 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700">Agendar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Record Modal -->
+    <div id="record-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50">
+        <div class="bg-white rounded-xl p-8 w-full max-w-md">
+            <h4 class="text-xl font-bold mb-6">Novo Registro Clínico</h4>
+            <form id="record-form" class="space-y-4">
+                <input type="hidden" id="record-id">
+                <div>
+                    <label class="block text-sm font-medium mb-1">Data</label>
+                    <input type="date" id="record-date" class="w-full border p-2 rounded-lg focus:ring-2 focus:ring-teal-500 outline-none" required>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-1">Pet</label>
+                    <select id="record-pet-id" class="w-full border p-2 rounded-lg focus:ring-2 focus:ring-teal-500 outline-none" required></select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-1">Tipo de Registro</label>
+                    <select id="record-type" class="w-full border p-2 rounded-lg focus:ring-2 focus:ring-teal-500 outline-none" required>
+                        <option value="Consulta">Consulta / Prontuário</option>
+                        <option value="Vacina">Vacinação</option>
+                        <option value="Exame">Exame</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-1">Descrição / Nome da Vacina</label>
+                    <textarea id="record-desc" class="w-full border p-2 rounded-lg focus:ring-2 focus:ring-teal-500 outline-none h-24" required></textarea>
+                </div>
+                <div class="flex justify-end space-x-3 pt-4">
+                    <button type="button" onclick="closeModal('record-modal')" class="px-4 py-2 text-gray-600">Cancelar</button>
+                    <button type="submit" class="px-4 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700">Registrar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:8081';
+
+        let state = {
+            tutors: [],
+            vets: [],
+            pets: [],
+            appointments: [],
+            prontuarios: [],
+            vacinacoes: []
+        };
+
+        async function apiRequest(path, options = {}) {
+            const response = await fetch(`${API_BASE}${path}`, {
+                headers: { 'Content-Type': 'application/json' },
+                ...options
+            });
+
+            if (!response.ok) {
+                const text = await response.text();
+                throw new Error(text || 'Erro ao chamar API');
+            }
+
+            if (response.status === 204) {
+                return null;
+            }
+
+            return response.json();
+        }
+
+        async function loadAllData() {
+            const [tutors, vets, pets, appointments, prontuarios, vacinacoes] = await Promise.all([
+                apiRequest('/Tutor/ReadTutor'),
+                apiRequest('/Veterinario/ReadVeterinario'),
+                apiRequest('/Animal/ReadAnimal'),
+                apiRequest('/Consulta/ReadConsulta'),
+                apiRequest('/Prontuario/ReadProntuario'),
+                apiRequest('/Vacinacao/ReadVacinacao')
+            ]);
+
+            state.tutors = tutors || [];
+            state.vets = vets || [];
+            state.pets = pets || [];
+            state.appointments = appointments || [];
+            state.prontuarios = prontuarios || [];
+            state.vacinacoes = vacinacoes || [];
+
+            updateUI();
+        }
+
+        async function initApp() {
+            try {
+                await loadAllData();
+            } catch (error) {
+                notify(error.message || 'Erro ao carregar dados');
+            }
+
+            showSection('pets');
+        }
+
+        // --- Navegação ---
+        function showSection(sectionId) {
+            const sections = ['tutors', 'vets', 'pets', 'appointments', 'records'];
+            sections.forEach(s => {
+                document.getElementById(`section-${s}`).classList.add('hidden');
+                document.getElementById(`btn-${s}`).classList.remove('active');
+            });
+
+            document.getElementById(`section-${sectionId}`).classList.remove('hidden');
+            document.getElementById(`btn-${sectionId}`).classList.add('active');
+
+            const titleMap = {
+                tutors: 'Gestão de Tutores',
+                vets: 'Gestão de Veterinários',
+                pets: 'Gestão de Animais (Pets)',
+                appointments: 'Agendamento de Consultas',
+                records: 'Prontuários & Vacinas'
+            };
+            document.getElementById('section-title').textContent = titleMap[sectionId];
+            
+            // Popula selects necessários
+            if (sectionId === 'pets') populateTutorSelect();
+            if (sectionId === 'appointments') { populatePetSelect('appointment-pet-id'); populateVetSelect(); }
+            if (sectionId === 'records') populatePetSelect('record-pet-id');
+        }
+
+        function openModal(modalId) {
+            document.getElementById(modalId).classList.remove('hidden');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.add('hidden');
+            document.getElementById(modalId.replace('-modal', '-form')).reset();
+            document.getElementById(modalId.replace('-modal', '-id')).value = '';
+        }
+
+        function notify(msg) {
+            const area = document.getElementById('notification-area');
+            const el = document.createElement('div');
+            el.className = 'fixed bottom-4 right-4 bg-teal-600 text-white px-6 py-3 rounded-xl shadow-lg transform transition duration-300 translate-y-20';
+            el.textContent = msg;
+            document.body.appendChild(el);
+            setTimeout(() => el.classList.remove('translate-y-20'), 100);
+            setTimeout(() => {
+                el.classList.add('translate-y-20');
+                setTimeout(() => el.remove(), 300);
+            }, 3000);
+        }
+
+        // --- Funções Auxiliares de População ---
+        function populateTutorSelect() {
+            const select = document.getElementById('pet-tutor-id');
+            select.innerHTML = state.tutors.map(t => `<option value="${t.id}">${t.nome}</option>`).join('') || '<option disabled>Cadastre um tutor primeiro</option>';
+        }
+
+        function populateVetSelect() {
+            const select = document.getElementById('appointment-vet-id');
+            select.innerHTML = state.vets.map(v => `<option value="${v.id}">${v.nome} (${v.especialidade})</option>`).join('') || '<option disabled>Cadastre um veterinário primeiro</option>';
+        }
+
+        function populatePetSelect(id) {
+            const select = document.getElementById(id);
+            select.innerHTML = state.pets.map(p => `<option value="${p.id}">${p.nome}</option>`).join('') || '<option disabled>Cadastre um pet primeiro</option>';
+        }
+
+        // --- CRUD Logic ---
+
+        // Tutores
+        document.getElementById('tutor-form').onsubmit = async (e) => {
+            e.preventDefault();
+            const id = document.getElementById('tutor-id').value;
+            const tutorData = {
+                nome: document.getElementById('tutor-name').value,
+                telefone: document.getElementById('tutor-phone').value,
+                email: ''
+            };
+
+            try {
+                if (id) {
+                    await apiRequest(`/Tutor/UpdateTutor/${id}`, {
+                        method: 'PUT',
+                        body: JSON.stringify({ id: Number(id), ...tutorData })
+                    });
+                } else {
+                    await apiRequest('/Tutor', {
+                        method: 'POST',
+                        body: JSON.stringify(tutorData)
+                    });
+                }
+                await loadAllData();
+                closeModal('tutor-modal');
+                notify('Tutor salvo!');
+            } catch (error) {
+                notify(error.message || 'Erro ao salvar tutor');
+            }
+        };
+
+        function editTutor(id) {
+            const tutor = state.tutors.find(t => t.id === Number(id));
+            document.getElementById('tutor-id').value = tutor.id;
+            document.getElementById('tutor-name').value = tutor.nome;
+            document.getElementById('tutor-phone').value = tutor.telefone;
+            document.getElementById('tutor-modal-title').textContent = 'Editar Tutor';
+            openModal('tutor-modal');
+        }
+
+        async function deleteTutor(id) {
+            try {
+                await apiRequest(`/Tutor/DeleteTutor/${id}`, { method: 'DELETE' });
+                await loadAllData();
+            } catch (error) {
+                notify(error.message || 'Erro ao excluir tutor');
+            }
+        }
+
+        // Vets
+        document.getElementById('vet-form').onsubmit = async (e) => {
+            e.preventDefault();
+            const id = document.getElementById('vet-id').value;
+            const vetData = {
+                nome: document.getElementById('vet-name').value,
+                especialidade: document.getElementById('vet-specialty').value,
+                crmv: ''
+            };
+
+            try {
+                if (id) {
+                    await apiRequest(`/Veterinario/UpdateVeterinario/${id}`, {
+                        method: 'PUT',
+                        body: JSON.stringify({ id: Number(id), ...vetData })
+                    });
+                } else {
+                    await apiRequest('/Veterinario', {
+                        method: 'POST',
+                        body: JSON.stringify(vetData)
+                    });
+                }
+                await loadAllData();
+                closeModal('vet-modal');
+                notify('Veterinário cadastrado!');
+            } catch (error) {
+                notify(error.message || 'Erro ao cadastrar veterinário');
+            }
+        };
+
+        function editVet(id) {
+            const vet = state.vets.find(v => v.id === Number(id));
+            document.getElementById('vet-id').value = vet.id;
+            document.getElementById('vet-name').value = vet.nome;
+            document.getElementById('vet-specialty').value = vet.especialidade;
+            document.getElementById('vet-modal-title').textContent = 'Editar Veterinário';
+            openModal('vet-modal');
+        }
+
+        async function deleteVet(id) {
+            try {
+                await apiRequest(`/Veterinario/DeleteVeterinario/${id}`, { method: 'DELETE' });
+                await loadAllData();
+            } catch (error) {
+                notify(error.message || 'Erro ao excluir veterinário');
+            }
+        }
+
+        // Pets
+        document.getElementById('pet-form').onsubmit = async (e) => {
+            e.preventDefault();
+            const id = document.getElementById('pet-id').value;
+            const petData = {
+                nome: document.getElementById('pet-name').value,
+                especie: document.getElementById('pet-species').value,
+                raca: document.getElementById('pet-breed').value,
+                dataNascimento: null,
+                tutor: { id: Number(document.getElementById('pet-tutor-id').value) }
+            };
+
+            try {
+                if (id) {
+                    await apiRequest(`/Animal/UpdateAnimal/${id}`, {
+                        method: 'PUT',
+                        body: JSON.stringify({ id: Number(id), ...petData })
+                    });
+                } else {
+                    await apiRequest('/Animal', {
+                        method: 'POST',
+                        body: JSON.stringify(petData)
+                    });
+                }
+                await loadAllData();
+                closeModal('pet-modal');
+                notify('Pet salvo!');
+            } catch (error) {
+                notify(error.message || 'Erro ao salvar pet');
+            }
+        };
+
+        function editPet(id) {
+            const pet = state.pets.find(p => p.id === Number(id));
+            document.getElementById('pet-id').value = pet.id;
+            document.getElementById('pet-name').value = pet.nome;
+            document.getElementById('pet-species').value = pet.especie;
+            document.getElementById('pet-breed').value = pet.raca;
+            document.getElementById('pet-tutor-id').value = pet.tutor ? pet.tutor.id : '';
+            document.getElementById('pet-modal-title').textContent = 'Editar Pet';
+            openModal('pet-modal');
+        }
+
+        async function deletePet(id) {
+            try {
+                await apiRequest(`/Animal/DeleteAnimal/${id}`, { method: 'DELETE' });
+                await loadAllData();
+            } catch (error) {
+                notify(error.message || 'Erro ao excluir pet');
+            }
+        }
+
+        // Appointments
+        document.getElementById('appointment-form').onsubmit = async (e) => {
+            e.preventDefault();
+            const appData = {
+                dataHora: document.getElementById('appointment-date').value,
+                motivo: '',
+                especialidadeRequerida: '',
+                animal: { id: Number(document.getElementById('appointment-pet-id').value) },
+                veterinario: { id: Number(document.getElementById('appointment-vet-id').value) }
+            };
+
+            try {
+                await apiRequest('/Consulta', {
+                    method: 'POST',
+                    body: JSON.stringify(appData)
+                });
+                await loadAllData();
+                closeModal('appointment-modal');
+                notify('Agendado!');
+            } catch (error) {
+                notify(error.message || 'Erro ao agendar consulta');
+            }
+        };
+
+        async function deleteAppointment(id) {
+            try {
+                await apiRequest(`/Consulta/DeleteConsulta/${id}`, { method: 'DELETE' });
+                await loadAllData();
+            } catch (error) {
+                notify(error.message || 'Erro ao excluir consulta');
+            }
+        }
+
+        // Records
+        document.getElementById('record-form').onsubmit = async (e) => {
+            e.preventDefault();
+            const type = document.getElementById('record-type').value;
+            const petId = Number(document.getElementById('record-pet-id').value);
+            const date = document.getElementById('record-date').value;
+            const desc = document.getElementById('record-desc').value;
+
+            try {
+                if (type === 'Vacina') {
+                    const vacinacaoData = {
+                        vacina: desc,
+                        dataAplicacao: date,
+                        proximaDose: null,
+                        animal: { id: petId }
+                    };
+                    await apiRequest('/Vacinacao', {
+                        method: 'POST',
+                        body: JSON.stringify(vacinacaoData)
+                    });
+                } else {
+                    const prontuarioData = {
+                        dataRegistro: date,
+                        descricao: desc,
+                        animal: { id: petId },
+                        consulta: null
+                    };
+                    await apiRequest('/Prontuario', {
+                        method: 'POST',
+                        body: JSON.stringify(prontuarioData)
+                    });
+                }
+
+                await loadAllData();
+                closeModal('record-modal');
+                notify('Registro adicionado!');
+            } catch (error) {
+                notify(error.message || 'Erro ao registrar');
+            }
+        };
+
+        async function deleteRecord(id, type) {
+            try {
+                if (type === 'Vacina') {
+                    await apiRequest(`/Vacinacao/DeleteVacinacao/${id}`, { method: 'DELETE' });
+                } else {
+                    await apiRequest(`/Prontuario/DeleteProntuario/${id}`, { method: 'DELETE' });
+                }
+                await loadAllData();
+            } catch (error) {
+                notify(error.message || 'Erro ao excluir registro');
+            }
+        }
+
+        // --- Atualização da UI ---
+        function updateUI() {
+            // Tabela Pets
+            document.getElementById('table-pets').innerHTML = state.pets.map(p => {
+                const tutor = state.tutors.find(t => t.id === (p.tutor ? p.tutor.id : null));
+                return `<tr>
+                    <td class="px-6 py-4 font-medium">${p.nome}</td>
+                    <td class="px-6 py-4 text-gray-500">${p.especie} / ${p.raca}</td>
+                    <td class="px-6 py-4 text-gray-500">${tutor ? tutor.nome : 'N/A'}</td>
+                    <td class="px-6 py-4 text-right">
+                        <button onclick="editPet('${p.id}')" class="text-teal-600 hover:underline mr-4">Editar</button>
+                        <button onclick="deletePet('${p.id}')" class="text-red-500 hover:underline">Excluir</button>
+                    </td>
+                </tr>`;
+            }).join('') || '<tr><td colspan="4" class="px-6 py-4 text-center text-gray-400">Nenhum pet cadastrado.</td></tr>';
+
+            // Tabela Tutores
+            document.getElementById('table-tutors').innerHTML = state.tutors.map(t => `<tr>
+                <td class="px-6 py-4 font-medium">${t.nome}</td>
+                <td class="px-6 py-4 text-gray-500">${t.telefone}</td>
+                <td class="px-6 py-4 text-right space-x-2">
+                    <button onclick="editTutor('${t.id}')" class="text-teal-600 hover:underline">Editar</button>
+                    <button onclick="deleteTutor('${t.id}')" class="text-red-500 hover:underline">Excluir</button>
+                </td>
+            </tr>`).join('') || '<tr><td colspan="3" class="px-6 py-4 text-center text-gray-400">Nenhum tutor.</td></tr>';
+
+            // Tabela Vets
+            document.getElementById('table-vets').innerHTML = state.vets.map(v => `<tr>
+                <td class="px-6 py-4 font-medium">${v.nome}</td>
+                <td class="px-6 py-4 text-gray-500">${v.especialidade}</td>
+                <td class="px-6 py-4 text-right">
+                    <button onclick="editVet('${v.id}')" class="text-teal-600 hover:underline mr-4">Editar</button>
+                    <button onclick="deleteVet('${v.id}')" class="text-red-500 hover:underline">Excluir</button>
+                </td>
+            </tr>`).join('') || '<tr><td colspan="3" class="px-6 py-4 text-center text-gray-400">Nenhum veterinário.</td></tr>';
+
+            // Tabela Agendamentos
+            document.getElementById('table-appointments').innerHTML = state.appointments.map(a => {
+                const pet = state.pets.find(p => p.id === (a.animal ? a.animal.id : null));
+                const vet = state.vets.find(v => v.id === (a.veterinario ? a.veterinario.id : null));
+                return `<tr>
+                    <td class="px-6 py-4 font-medium">${a.dataHora ? new Date(a.dataHora).toLocaleString('pt-BR') : ''}</td>
+                    <td class="px-6 py-4 text-gray-500">${pet ? pet.nome : '...'}</td>
+                    <td class="px-6 py-4 text-gray-500">${vet ? vet.nome : '...'}</td>
+                    <td class="px-6 py-4 text-right">
+                        <button onclick="deleteAppointment('${a.id}')" class="text-red-500 hover:underline">Excluir</button>
+                    </td>
+                </tr>`;
+            }).join('') || '<tr><td colspan="4" class="px-6 py-4 text-center text-gray-400">Vazio.</td></tr>';
+
+            // Tabela Prontuários
+            const records = [
+                ...state.prontuarios.map(p => ({
+                    id: p.id,
+                    date: p.dataRegistro,
+                    petId: p.animal ? p.animal.id : null,
+                    type: 'Consulta',
+                    desc: p.descricao
+                })),
+                ...state.vacinacoes.map(v => ({
+                    id: v.id,
+                    date: v.dataAplicacao,
+                    petId: v.animal ? v.animal.id : null,
+                    type: 'Vacina',
+                    desc: v.vacina
+                }))
+            ];
+
+            document.getElementById('table-records').innerHTML = records.map(r => {
+                const pet = state.pets.find(p => p.id === r.petId);
+                const color = r.type === 'Vacina' ? 'bg-purple-100 text-purple-700' : 'bg-orange-100 text-orange-700';
+                return `<tr>
+                    <td class="px-6 py-4 font-medium">${r.date ? new Date(r.date).toLocaleDateString('pt-BR') : ''}</td>
+                    <td class="px-6 py-4 text-gray-500">${pet ? pet.nome : '...'}</td>
+                    <td class="px-6 py-4"><span class="px-2 py-1 ${color} text-xs rounded-full">${r.type}</span></td>
+                    <td class="px-6 py-4 text-gray-500 truncate max-w-xs">${r.desc}</td>
+                    <td class="px-6 py-4 text-right">
+                        <button onclick="deleteRecord('${r.id}', '${r.type}')" class="text-red-500 hover:underline">Excluir</button>
+                    </td>
+                </tr>`;
+            }).join('') || '<tr><td colspan="5" class="px-6 py-4 text-center text-gray-400">Vazio.</td></tr>';
+        }
+
+        window.onload = initApp;
+    </script>
+</body>
+</html>
